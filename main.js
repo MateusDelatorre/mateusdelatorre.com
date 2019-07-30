@@ -25,10 +25,12 @@ function isColidindo(objeto1, objeto2) {
     return distance < 30;
 }
 
+var zumbi = {};
+
 //zumbi variaveis
 function novoZumbi(codigo, posicao_x, posicao_y) {
 
-    var zumbi = {
+    zumbi = {
         x : posicao_x,
         spdX : 1,
         y : posicao_y,
@@ -45,6 +47,7 @@ function update(){
     for (var key in listaDeZumbi){
         draw(listaDeZumbi[key]);
     }
+
 }
 
 function draw(objeto) {
@@ -55,8 +58,7 @@ function draw(objeto) {
     }else if(objeto.y >= height || objeto.y < 0){
         objeto.spdY *= -1;
     }
-    ctx.fillText(objeto.name,objeto.x,objeto.y);
-    console.log(objeto.x);
+    ctx.fillRect(objeto.x,objeto.y, 20, 20);
 }
 
 function main() {
