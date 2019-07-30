@@ -2,8 +2,6 @@ var ctx = document.getElementById("ctx").getContext("2d");
 ctx.font = '30px Arial';
 var width = 500;
 var height = 500;
-
-//jogador variaveis
 var jogador = {
     x : 50,
     spdX : 4,
@@ -11,24 +9,54 @@ var jogador = {
     spdY : 4,
     name : 'P',
 };
-
+var zumbi = {};
 var listaDeZumbi = {};
 
-function obterDistanciaEntreDoisobjetos(objeto1, objeto2) {
+obterDistanciaEntreDoisobjetos = function (objeto1, objeto2) {
     var vx = objeto1.x - objeto2.x;
     var vy = objeto1.y - objeto2.y;
     return Math.sqrt(vx*vx+vy*vy);
 }
 
-function isColidindo(objeto1, objeto2) {
+isColidindo = function (objeto1, objeto2) {
     var distance = obterDistanciaEntreDoisobjetos(objeto1, objeto2);
     return distance < 30;
 }
 
-var zumbi = {};
+desenha = function (objeto) {
+    ctx.fillRect(objeto.x,objeto.y, 20, 20);
+}
 
-//zumbi variaveis
-function novoZumbi(codigo, posicao_x, posicao_y) {
+objetoIsDentroDaTela = function (objeto) {
+    objeto.x += objeto.spdX;
+    objeto.y += objeto.spdY;
+    if(objeto.x >= width || objeto.x < 0){
+        objeto.spdX *= -1;
+    }else if(objeto.y >= height || objeto.y < 0){
+        objeto.spdY *= -1;
+    }
+}
+
+
+AtualizarObjeto = function (objeto) {
+    objetoIsDentroDaTela(objeto);
+    desenha(objeto);
+}
+
+AtualizarJogo = function (){
+    ctx.clearRect(0,0, width, height);
+    AtualizarObjeto(jogador);
+    for (var key in listaDeZumbi){
+        AtualizarObjeto(listaDeZumbi[key]);
+        var isColliding = isColidindo(jogador,listaDeZumbi[key]);
+        if(isColliding){
+            console.log('Colliding!');
+        }
+    }
+
+}
+
+novoZumbi = function (codigo, posicao_x, posicao_y) {
 
     zumbi = {
         x : posicao_x,
@@ -41,27 +69,7 @@ function novoZumbi(codigo, posicao_x, posicao_y) {
     listaDeZumbi[codigo] = zumbi ;
 }
 
-function update(){
-    ctx.clearRect(0,0, width, height);
-    draw(jogador);
-    for (var key in listaDeZumbi){
-        draw(listaDeZumbi[key]);
-    }
-
-}
-
-function draw(objeto) {
-    objeto.x += objeto.spdX;
-    objeto.y += objeto.spdY;
-    if(objeto.x >= width || objeto.x < 0){
-        objeto.spdX *= -1;
-    }else if(objeto.y >= height || objeto.y < 0){
-        objeto.spdY *= -1;
-    }
-    ctx.fillRect(objeto.x,objeto.y, 20, 20);
-}
-
-function main() {
+main = function () {
     /*
     * var min=4;
     * var max=5;
@@ -75,6 +83,6 @@ function main() {
         posicao_y = Math.floor(Math.random() * (+max - +min) + +min);
         novoZumbi('z' + i, posicao_x, posicao_y);
     }
-    setInterval(update,1);
+    setInterval(AtualizarJogo,1);
 }
 main();
