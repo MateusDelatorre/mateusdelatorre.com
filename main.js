@@ -12,6 +12,14 @@ var jogador = {
 var zumbi = {};
 var listaDeZumbi = {};
 
+document.onmousemove = function(mouse){
+    var mouseX = mouse.clientX;
+    var mouseY = mouse.clientY;
+
+    jogador.x = mouseX;
+    jogador.y = mouseY;
+}
+
 obterDistanciaEntreDoisobjetos = function (objeto1, objeto2) {
     var vx = objeto1.x - objeto2.x;
     var vy = objeto1.y - objeto2.y;
@@ -23,7 +31,7 @@ isColidindo = function (objeto1, objeto2) {
     return distance < 30;
 }
 
-desenha = function (objeto) {
+desenhaObjeto = function (objeto) {
     ctx.fillRect(objeto.x,objeto.y, 20, 20);
 }
 
@@ -40,20 +48,21 @@ objetoIsDentroDaTela = function (objeto) {
 
 AtualizarObjeto = function (objeto) {
     objetoIsDentroDaTela(objeto);
-    desenha(objeto);
+    desenhaObjeto(objeto);
 }
-
+var acabouOJogo = 0
 AtualizarJogo = function (){
+    if(acabouOJogo < 1){
     ctx.clearRect(0,0, width, height);
-    AtualizarObjeto(jogador);
+    desenhaObjeto(jogador);
     for (var key in listaDeZumbi){
         AtualizarObjeto(listaDeZumbi[key]);
         var isColliding = isColidindo(jogador,listaDeZumbi[key]);
         if(isColliding){
-            console.log('Colliding!');
+            acabouOJogo = 1;
         }
     }
-
+    }
 }
 
 novoZumbi = function (codigo, posicao_x, posicao_y) {
