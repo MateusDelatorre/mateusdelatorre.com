@@ -14,6 +14,17 @@ var jogador = {
 
 var listaDeZumbi = {};
 
+function obterDistanciaEntreDoisobjetos(objeto1, objeto2) {
+    var vx = objeto1.x - objeto2.x;
+    var vy = objeto1.y - objeto2.y;
+    return Math.sqrt(vx*vx+vy*vy);
+}
+
+function isColidindo(objeto1, objeto2) {
+    var distance = obterDistanciaEntreDoisobjetos(objeto1, objeto2);
+    return distance < 30;
+}
+
 //zumbi variaveis
 function novoZumbi(codigo, posicao_x, posicao_y) {
 
