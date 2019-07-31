@@ -1,39 +1,41 @@
 var ctx = document.getElementById("ctx").getContext("2d");
 ctx.font = '30px Arial';
-var width = 500;
-var height = 500;
+var width = 600;
+var height = 600;
 var jogador = {
     x : 50,
     spdX : 4,
     y : 40,
     spdY : 4,
     name : 'P',
+    hp : 10,
 };
 var zumbi = {};
 var listaDeZumbi = {};
-
+var tempoQuandoOJogoComecou = Date.now();   //Retorna o tempo em ms
+var tempoSobrevivido;
 document.onmousemove = function(mouse){
     var mouseX = mouse.clientX;
     var mouseY = mouse.clientY;
 
     jogador.x = mouseX;
     jogador.y = mouseY;
-}
+};
 
 obterDistanciaEntreDoisobjetos = function (objeto1, objeto2) {
     var vx = objeto1.x - objeto2.x;
     var vy = objeto1.y - objeto2.y;
     return Math.sqrt(vx*vx+vy*vy);
-}
+};
 
 isColidindo = function (objeto1, objeto2) {
     var distance = obterDistanciaEntreDoisobjetos(objeto1, objeto2);
     return distance < 30;
-}
+};
 
 desenhaObjeto = function (objeto) {
     ctx.fillRect(objeto.x,objeto.y, 20, 20);
-}
+};
 
 objetoIsDentroDaTela = function (objeto) {
     objeto.x += objeto.spdX;
@@ -43,14 +45,14 @@ objetoIsDentroDaTela = function (objeto) {
     }else if(objeto.y >= height || objeto.y < 0){
         objeto.spdY *= -1;
     }
-}
-
+};
 
 AtualizarObjeto = function (objeto) {
     objetoIsDentroDaTela(objeto);
     desenhaObjeto(objeto);
-}
-var acabouOJogo = 0
+};
+
+var acabouOJogo = 0;
 AtualizarJogo = function (){
     if(acabouOJogo < 1){
     ctx.clearRect(0,0, width, height);
@@ -59,11 +61,19 @@ AtualizarJogo = function (){
         AtualizarObjeto(listaDeZumbi[key]);
         var isColliding = isColidindo(jogador,listaDeZumbi[key]);
         if(isColliding){
-            acabouOJogo = 1;
+            jogador.hp--;
+            if(jogador.hp <= 0){
+                tempoSobrevivido = Date.now() - tempoQuandoOJogoComecou;
+                ctx.fillText("Você Perdeu! Você sobreviveu por " + tempoSobrevivido + " ms.",0,50);
+                tempoQuandoOJogoComecou = Date.now();
+                //jogador.hp = 10;
+                acabouOJogo = 1;
+            }
         }
     }
+    ctx.fillText(jogador.hp  + " Hp",0,30);
     }
-}
+};
 
 novoZumbi = function (codigo, posicao_x, posicao_y) {
 
@@ -76,7 +86,7 @@ novoZumbi = function (codigo, posicao_x, posicao_y) {
         id : codigo,
     };
     listaDeZumbi[codigo] = zumbi ;
-}
+};
 
 main = function () {
     /*
@@ -93,5 +103,6 @@ main = function () {
         novoZumbi('z' + i, posicao_x, posicao_y);
     }
     setInterval(AtualizarJogo,1);
-}
+};
+
 main();
