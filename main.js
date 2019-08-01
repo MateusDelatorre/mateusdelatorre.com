@@ -14,6 +14,8 @@ var zumbi = {};
 var listaDeZumbi = {};
 var tempoQuandoOJogoComecou = Date.now();   //Retorna o tempo em ms
 var tempoSobrevivido;
+var acabouOJogo = 0;
+
 document.onmousemove = function(mouse){
     var mouseX = mouse.clientX;
     var mouseY = mouse.clientY;
@@ -33,7 +35,13 @@ isColidindo = function (objeto1, objeto2) {
     return distance < 30;
 };
 
-desenhaObjeto = function (objeto) {
+desenhaJogador = function (objeto) {
+    ctx.fillStyle = 'green';
+    ctx.fillRect(objeto.x,objeto.y, 20, 20);
+};
+
+desenhaZumbi = function (objeto) {
+    ctx.fillStyle = 'red';
     ctx.fillRect(objeto.x,objeto.y, 20, 20);
 };
 
@@ -49,28 +57,31 @@ objetoIsDentroDaTela = function (objeto) {
 
 AtualizarObjeto = function (objeto) {
     objetoIsDentroDaTela(objeto);
-    desenhaObjeto(objeto);
+    desenhaZumbi(objeto);
 };
 
-var acabouOJogo = 0;
+finalDeJogo = function () {
+    tempoSobrevivido = Date.now() - tempoQuandoOJogoComecou;
+    ctx.fillStyle = 'black';
+    ctx.fillText("Você Perdeu! Você sobreviveu por " + tempoSobrevivido + " ms.",0,50);
+    tempoQuandoOJogoComecou = Date.now();
+};
+
 AtualizarJogo = function (){
     if(acabouOJogo < 1){
     ctx.clearRect(0,0, width, height);
-    desenhaObjeto(jogador);
+    desenhaJogador(jogador);
     for (var key in listaDeZumbi){
         AtualizarObjeto(listaDeZumbi[key]);
-        var isColliding = isColidindo(jogador,listaDeZumbi[key]);
-        if(isColliding){
+        if(isColidindo(jogador,listaDeZumbi[key])){
             jogador.hp--;
             if(jogador.hp <= 0){
-                tempoSobrevivido = Date.now() - tempoQuandoOJogoComecou;
-                ctx.fillText("Você Perdeu! Você sobreviveu por " + tempoSobrevivido + " ms.",0,50);
-                tempoQuandoOJogoComecou = Date.now();
-                //jogador.hp = 10;
+                finalDeJogo();
                 acabouOJogo = 1;
             }
         }
     }
+    ctx.fillStyle = 'black';
     ctx.fillText(jogador.hp  + " Hp",0,30);
     }
 };
